@@ -1,0 +1,21 @@
+{
+    "": [
+        {
+            "card_id": "example_event",
+            "pic_id": "player",
+            "type": "Event",
+            "name": "Example Event",
+            "subtitle": "",
+            "desc": {
+                "Cost": "2",
+                "RES": "B",
+                "Class": "Hero"
+            },
+            "traits": [
+                "SUPERPOWER"
+            ],
+            "set_name": "",
+            "text": ""
+        }
+    ]
+}
