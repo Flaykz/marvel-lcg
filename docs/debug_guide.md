@@ -13,3 +13,4 @@ Add `&debug` parameter at the end of the URL
 1. Type any command like `gain 03012` `discard c11` to execute it
 2. Use `Up` / `Down` arrow keys to cycle through recently used commands
 
+![](/docs/assets/image-2.jpg)

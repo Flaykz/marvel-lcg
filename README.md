@@ -21,7 +21,5 @@ Do not install or run any third-party card scripts unless you trust them.
 
 ## Snapshot
 
-![](docs/assets/image-1.jpg)
-![](docs/assets/image-2.jpg)
-![](docs/assets/image-3.jpg)
-
+![](/docs/assets/image-1.jpg)
+![](/docs/assets/image-2.jpg)

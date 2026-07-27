@@ -22,3 +22,4 @@ Notice: any fields with a green background will NOT be auto-filled, you must che
 1. Click the "Submit" button to add this card.
 1. If this card includes abilities, the editor will also create `{card_id}.py` file and open it in vscode for editing.
 
+![](/docs/assets/image-3.jpg)
