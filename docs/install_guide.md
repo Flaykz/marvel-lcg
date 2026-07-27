@@ -23,7 +23,9 @@ https://nodejs.org/en/download
 
 ## 4. Install typescript
 
-`npm install -g typescript`
+```
+npm install -g typescript
+```
 
 ## 5. Compile ts to js
 
