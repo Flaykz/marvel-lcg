@@ -6,6 +6,5 @@
 /save_*.json
 /crash.json
 /crash.log
-/launch.json
 /statistics.json
 /deck/*.json
