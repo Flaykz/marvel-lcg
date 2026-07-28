@@ -9,12 +9,7 @@ We've tested in py 3.10.5 and py 3.14.2
 ## 2. Install requirements
 
 ```cmd
-pip install packaging
-pip install PIL
-pip install Pillow
-pip install requests
-pip install psutil
-pip install aiohttp
+pip install -r requirements.txt
 ```
 
 ## 3. Download nodejs
