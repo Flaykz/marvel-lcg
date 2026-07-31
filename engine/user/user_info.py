@@ -4,7 +4,7 @@ import platform
 import hashlib
 from core import *
 from typing import TypeAlias
-import psutil
+# import psutil
 import uuid
 
 class UserInfo:
@@ -43,9 +43,10 @@ class UserInfo:
             }
 
         def get_memory():
-            total_memory = psutil.virtual_memory().total
-            total_memory_gb = total_memory / (1024 ** 3)
-            return f"{total_memory_gb:.2f}GB"
+            # total_memory = psutil.virtual_memory().total
+            # total_memory_gb = total_memory / (1024 ** 3)
+            # return f"{total_memory_gb:.2f}GB"
+            return "0.00GB"
 
         def get_language():
             # Get the default language of the system
