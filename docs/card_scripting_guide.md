@@ -363,7 +363,7 @@ AbilityFactory.WhenInYourPlayTurn(
 .SetCost(Cost("Y"))               # Resource cost
 .SetCostFunc(CostFunc.Exhaust("This"))  # Exhaust this card as cost
 .SetTarget(Enemy)                 # Set targeting
-.SetTarget("YourIdentity")        # Target yourself
+.SetTarget2("YourIdentity")       # Target yourself
 .LimitOncePerRound()              # Can only use once per round
 ```
 
