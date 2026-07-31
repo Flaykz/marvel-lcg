@@ -1,12 +1,13 @@
 from core import *
-import winsound
+# import winsound
 
 class Beep:
 
     @staticmethod
     def BeepInternal(frequency: int=1000, duration: int=100):
         # Frequency in Hertz and duration in milliseconds
-        winsound.Beep(frequency, duration)
+        # winsound.Beep(frequency, duration)
+        pass
 
     @staticmethod
     def NotesInternal(notes: List[Tuple[int, int]]):
