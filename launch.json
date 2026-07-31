@@ -10,8 +10,6 @@
     "statistics": true,
     "show_image_text": true,
 
-    "check_for_new_version_on_startup": true,
-
     "image_servers": [
         "https://cerebrodatastorage.blob.core.windows.net/cerebro-cards/official/{card_id:U}.jpg"
     ],
