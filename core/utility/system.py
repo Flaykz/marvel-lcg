@@ -1,4 +1,5 @@
 import os
+import platform
 
 class System:
 
@@ -8,11 +9,14 @@ class System:
 
     @staticmethod
     def SetTitle(title: str):
-        System.Run(f'title {title}')
+        print(platform.system())
+        if platform.system() == "Windows":
+            System.Run(f'title {title}')
 
     @staticmethod
     def Pause():
-        System.Run('pause')
+        if platform.system() == "Windows":
+            System.Run('pause')
 
     @staticmethod
     def Sleep(secs: float):
