@@ -24,7 +24,14 @@ npm install -g typescript
 
 ## 5. Compile ts to js
 
-Double click to run "\public\js\watch.bat"
+On Windows, double click to run "\public\js\watch.bat"
+
+On macOS and Linux, run the same command directly:
+
+```sh
+cd public/js
+tsc --watch
+```
 
 ## 6. Download assets
 
