@@ -1,0 +1,27 @@
+services:
+  marvel-lcg:
+    image: ghcr.io/flaykz/marvel-lcg:latest
+    container_name: marvel-lcg
+    restart: unless-stopped
+    ports:
+      - "2345:2345"
+    volumes:
+      # Config (copy launch.json here once, then edit it: password, etc.)
+      - ./docker-data/launch.json:/app/launch.json
+      # Game assets downloaded from https://irefrixs.itch.io/marvel-lcg
+      # (extract the "assets" folder from the download into docker-data/assets)
+      - ./docker-data/assets:/app/assets
+      # Deck lists
+      - ./docker-data/deck:/app/deck
+      # Auto-saved game replays (default save mechanism, path from launch.json's
+      # "replay_folders")
+      - ./docker-data/replays:/app/replays
+      # Loose files the engine writes/reads at its working directory root.
+      # They must exist on the host before the first "docker compose up" or
+      # Docker will create them as directories instead of files.
+      - ./docker-data/statistics.json:/app/statistics.json
+      - ./docker-data/crash.log:/app/crash.log
+      - ./docker-data/crash.json:/app/crash.json
+      - ./docker-data/save.json:/app/save.json
+    # environment:
+    #   - TZ=Europe/Paris
