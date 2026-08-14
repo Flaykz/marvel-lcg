@@ -8,5 +8,6 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 COPY --from=frontend /app/public/js /app/public/js
+ENV PYTHONUNBUFFERED=1
 EXPOSE 2345
 CMD ["python", "main.py"]
