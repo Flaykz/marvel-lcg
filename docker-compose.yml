@@ -7,16 +7,20 @@ services:
       - "2345:2345"
     volumes:
       # Named volumes: Docker creates them automatically on first "up" and
-      # seeds them with whatever the image already has at that path
-      # (launch.json, the starter decks). No manual mkdir/touch needed.
-      - launch:/app/launch.json   # edit later with: docker exec -it marvel-lcg vi launch.json
-      - assets:/app/assets        # empty at first run, see README to fill it in
+      # seeds them with whatever the image already has at that path (the
+      # starter decks). No manual mkdir/touch needed.
+      - assets:/app/assets   # empty at first run, see README to fill it in
       - deck:/app/deck
       - replays:/app/replays
-      - state:/app/state          # statistics.json + crash.log
+      - state:/app/state     # statistics.json + crash.log
+      # Optional: uncomment to persist a custom launch.json (e.g. a
+      # password) across image updates. Docker volumes can't be mounted
+      # directly onto a single file, so this one needs a real host file:
+      # curl a copy first, then edit it.
+      #   curl -o launch.json https://raw.githubusercontent.com/Flaykz/marvel-lcg/main/launch.json
+      # - ./launch.json:/app/launch.json
 
 volumes:
-  launch:
   assets:
   deck:
   replays:

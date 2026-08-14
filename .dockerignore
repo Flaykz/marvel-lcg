@@ -2,6 +2,7 @@
 .gitignore
 Dockerfile
 docker-compose.yml
+assets
 __pycache__
 *.pyc
 *.pyo
