@@ -6,22 +6,32 @@ services:
     ports:
       - "2345:2345"
     volumes:
-      # Named volumes: Docker creates them automatically on first "up" and
-      # seeds them with whatever the image already has at that path (the
-      # starter decks). No manual mkdir/touch needed.
-      - assets:/app/assets   # empty at first run, see README to fill it in
-      - deck:/app/deck
-      - replays:/app/replays
-      - state:/app/state     # statistics.json + crash.log
+      # All of the folders below are bind-mounted to plain host directories
+      # instead of named volumes, so the data is visible/backupable directly
+      # from the NAS file browser and survives `docker rm`/image updates the
+      # same way named volumes would.
+      #
+      # assets/ is never shipped in the image (see .dockerignore) since it
+      # comes from the itch.io download, not this repo. Download the game
+      # from https://irefrixs.itch.io/marvel-lcg, copy its `assets` folder
+      # next to this docker-compose.yml (or point the path below at wherever
+      # you put it), then start the container.
+      - ./assets:/app/assets
+      # deck/ ships in the image with the starter decks under deck/starter/.
+      # Unlike a named volume, a bind mount does NOT get auto-seeded from the
+      # image, so copy the folder out once before first start:
+      #   docker create --name marvel-lcg-seed ghcr.io/flaykz/marvel-lcg:latest
+      #   docker cp marvel-lcg-seed:/app/deck ./deck
+      #   docker rm marvel-lcg-seed
+      - ./deck:/app/deck
+      # replays/ and state/ start empty either way (replays recorded and
+      # statistics.json/crash.log written at runtime), so no seeding needed
+      # — the folders are created on first start if they don't exist.
+      - ./replays:/app/replays
+      - ./state:/app/state    # statistics.json + crash.log
       # Optional: uncomment to persist a custom launch.json (e.g. a
       # password) across image updates. Docker volumes can't be mounted
       # directly onto a single file, so this one needs a real host file:
       # curl a copy first, then edit it.
       #   curl -o launch.json https://raw.githubusercontent.com/Flaykz/marvel-lcg/main/launch.json
       # - ./launch.json:/app/launch.json
-
-volumes:
-  assets:
-  deck:
-  replays:
-  state:
