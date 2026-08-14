@@ -6,7 +6,8 @@
 
     "translate_file": "",
 
-    "game_statistics_file": "statistics.json",
+    "game_statistics_file": "./state/statistics.json",
+    "crash_file": "./state/crash.log",
     "statistics": true,
     "show_image_text": true,
 

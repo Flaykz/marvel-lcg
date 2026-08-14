@@ -8,4 +8,5 @@
 /crash.log
 /statistics.json
 /deck/*.json
-/docker-data/
+/state/*.json
+/state/*.log

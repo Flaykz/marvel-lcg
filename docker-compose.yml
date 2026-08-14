@@ -6,22 +6,18 @@ services:
     ports:
       - "2345:2345"
     volumes:
-      # Config (copy launch.json here once, then edit it: password, etc.)
-      - ./docker-data/launch.json:/app/launch.json
-      # Game assets downloaded from https://irefrixs.itch.io/marvel-lcg
-      # (extract the "assets" folder from the download into docker-data/assets)
-      - ./docker-data/assets:/app/assets
-      # Deck lists
-      - ./docker-data/deck:/app/deck
-      # Auto-saved game replays (default save mechanism, path from launch.json's
-      # "replay_folders")
-      - ./docker-data/replays:/app/replays
-      # Loose files the engine writes/reads at its working directory root.
-      # They must exist on the host before the first "docker compose up" or
-      # Docker will create them as directories instead of files.
-      - ./docker-data/statistics.json:/app/statistics.json
-      - ./docker-data/crash.log:/app/crash.log
-      - ./docker-data/crash.json:/app/crash.json
-      - ./docker-data/save.json:/app/save.json
-    # environment:
-    #   - TZ=Europe/Paris
+      # Named volumes: Docker creates them automatically on first "up" and
+      # seeds them with whatever the image already has at that path
+      # (launch.json, the starter decks). No manual mkdir/touch needed.
+      - launch:/app/launch.json   # edit later with: docker exec -it marvel-lcg vi launch.json
+      - assets:/app/assets        # empty at first run, see README to fill it in
+      - deck:/app/deck
+      - replays:/app/replays
+      - state:/app/state          # statistics.json + crash.log
+
+volumes:
+  launch:
+  assets:
+  deck:
+  replays:
+  state:
