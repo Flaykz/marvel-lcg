@@ -297,6 +297,44 @@
         border-radius: 4px;
         pointer-events: none;
     }
+
+    #hero-select {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .2em;
+        max-height: calc(var(--card--height) * 2 + 20px);
+        overflow-y: auto;
+        border: 1px solid #aaa;
+        border-radius: 4px;
+        padding: .3em;
+        margin-bottom: .5rem;
+    }
+    #hero-select button {
+        position: relative;
+        margin: 2px;
+        padding: 0;
+        display: inline-flex;
+        border-radius: .25em;
+        filter: drop-shadow(2px 4px 6px black);
+    }
+    #hero-select button:hover {
+        cursor: pointer;
+        filter: drop-shadow(1px 2px 3px white);
+    }
+    #hero-select button img {
+        width: var(--card--width);
+        height: var(--card--height);
+        border-radius: .25em;
+        outline-style: outset;
+        outline-width: 2px;
+        outline-color: rgb(176, 176, 176);
+        pointer-events: none;
+    }
+    #hero-select button.click img {
+        outline-color: red;
+        outline-style: solid;
+        filter: drop-shadow(1px 2px 3px red);
+    }
 </style>
 
 </head>
@@ -636,6 +674,9 @@ async function createSets() {
 
     <fieldset style="flex-wrap: wrap; flex-direction: column;">
         <legend>Heroes</legend>
+
+        <div id="hero-select"></div>
+
         <div style="display: flex; flex-direction: row; gap:5px">
             <label for="heroes-1">
             <input id="heroes-1" type="file" name="heroes" accept=".json" onclick="Reset(this)" onchange="Load(this)"/>
@@ -670,6 +711,80 @@ async function createSets() {
                     }
                 }
             }
+
+            var selectedHeroButtons = {}
+
+            async function getHeroJson(name) {
+                const response = await fetch(`get_hero_json?${name}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return await response.json()
+            }
+
+            async function toggleHero(button, name) {
+                for( let i = 1; i <= 4; i++ ) {
+                    if( selectedHeroButtons[i] === button ) {
+                        Reset(document.querySelector(`#heroes-${i}`))
+                        return
+                    }
+                }
+
+                let slot = null
+                for( let i = 1; i <= 4; i++ ) {
+                    if( !heroes[i] ) {
+                        slot = i
+                        break
+                    }
+                }
+                if( slot == null ) {
+                    alert('You can only select up to 4 heroes. Deselect one first.')
+                    return
+                }
+
+                let j
+                try {
+                    j = await getHeroJson(name)
+                }
+                catch (err) {
+                    alert('Hero not implemented: ' + name)
+                    return
+                }
+                document.querySelector(`#heroes-${slot}`).value = ''
+                SetHero(j, slot)
+                selectedHeroButtons[slot] = button
+                button.classList.add('click')
+            }
+
+            async function createHeroes() {
+                const response = await fetch(`list_starter_deck?`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                /** @type {string[]} */
+                const data = await response.json();
+                const names = data.map(getFileName).sort()
+
+                const select = document.querySelector("#hero-select");
+                for( let name of names ) {
+                    const button = document.createElement("button");
+                    button.title = name
+
+                    const img = document.createElement("img");
+                    button.appendChild(img)
+
+                    getHeroJson(name).then(j => {
+                        if( j && j['hero'] && j['hero'].length > 0 ) {
+                            img.src = j['hero'][0].split(',')[0]
+                        }
+                    }).catch(() => {})
+
+                    button.onclick = () => toggleHero(button, name)
+                    select.appendChild(button)
+                }
+            }
+
+            createHeroes()
         </script>
         <p>
         Default hero JSON files are located in folder "./deck/starter". You can also <button onclick="importDeck()">Import</button> the data from your clipboard, or <a href="./deck">edit the deck</a>.
@@ -1373,6 +1488,10 @@ p:has(#timeout_text) {
             }
         }
         function SetHero(j, i) {
+            if( selectedHeroButtons[i] ) {
+                selectedHeroButtons[i].classList.remove('click')
+                delete selectedHeroButtons[i]
+            }
             e = document.querySelector(`#img-heroes-${i}`)
             try {
                 image = `${get_name(j['hero'][0])}`
