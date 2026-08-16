@@ -18,7 +18,9 @@
 #right-side-bar {
     --width: calc(4 * var(--font-size-out));
     right: calc(-1 * var(--width) + 4px);
-    bottom: 0;
+    bottom: calc(env(safe-area-inset-bottom, 0px));
+    max-height: calc(100% - env(safe-area-inset-bottom, 0px));
+    overflow-y: auto;
     transition: .15s linear right;
 }
 
