@@ -113,7 +113,8 @@ body {
     color: #a7a7a7;
     background: radial-gradient(#333, #111);
     overflow: hidden;
-    height: 100vh;
+    height: 100vh; /* fallback for browsers without dvh support */
+    height: 100dvh;
     z-index: -1;
 
     font-size: 64px;
