@@ -17,6 +17,15 @@ import { CardAnimation } from './card_animation.js'
 import { ErrorDialog } from './error_dialog.js'
 import { Command } from './command.js'
 
+type WebkitFullscreenDocument = Document & {
+    webkitExitFullscreen?: () => Promise<void> | void;
+    webkitFullscreenElement?: Element;
+}
+
+type WebkitFullscreenElement = HTMLElement & {
+    webkitRequestFullscreen?: () => Promise<void> | void;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 export class Button{
@@ -25,6 +34,49 @@ export class Button{
 
     static doToggleHistory() {
         HistoryLog.toggle()
+    }
+
+    static updateFullscreenButton() {
+        const button = document.getElementById('fullscreen-btn') as HTMLButtonElement | null
+        if( !button ) {
+            return
+        }
+
+        const webkitDocument = document as WebkitFullscreenDocument
+        const webkitRootElement = document.documentElement as WebkitFullscreenElement
+        const isSupported = Boolean(document.documentElement.requestFullscreen || webkitRootElement.webkitRequestFullscreen)
+        const isFullscreen = Boolean(document.fullscreenElement || webkitDocument.webkitFullscreenElement)
+        const label = isFullscreen ? 'Exit full screen' : 'Enter full screen'
+        button.innerHTML = `<i class="fa fa-${isFullscreen ? 'compress' : 'expand'}" aria-hidden="true"></i>`
+        button.disabled = !isSupported
+        button.classList.toggle('clicked', isFullscreen)
+        button.setAttribute('aria-pressed', isFullscreen.toString())
+        button.setAttribute('aria-label', label)
+        button.title = isSupported ? label : 'Full screen is not supported by this browser'
+    }
+
+    static async toggleFullscreen() {
+        const webkitDocument = document as WebkitFullscreenDocument
+        const rootElement = document.documentElement as WebkitFullscreenElement
+        const isFullscreen = Boolean(document.fullscreenElement || webkitDocument.webkitFullscreenElement)
+
+        try {
+            if( isFullscreen ) {
+                if( document.exitFullscreen ) {
+                    await document.exitFullscreen()
+                } else if( webkitDocument.webkitExitFullscreen ) {
+                    await webkitDocument.webkitExitFullscreen()
+                }
+            } else if( rootElement.requestFullscreen ) {
+                await rootElement.requestFullscreen()
+            } else if( rootElement.webkitRequestFullscreen ) {
+                await rootElement.webkitRequestFullscreen()
+            }
+        } catch(error) {
+            console.error('Unable to toggle full screen:', error)
+        } finally {
+            Button.updateFullscreenButton()
+        }
     }
 
     static doGet() {
@@ -738,6 +790,14 @@ export class Button{
             onClick: () => {Button.doToggleHistory()}
         })
         Button.createButtonBase(parent_div_right, {
+            text: `<i class="fa fa-expand" aria-hidden="true"></i>`,
+            id: "fullscreen-btn",
+            onClick: () => {void Button.toggleFullscreen()}
+        })
+        document.addEventListener('fullscreenchange', Button.updateFullscreenButton)
+        document.addEventListener('webkitfullscreenchange', Button.updateFullscreenButton)
+        Button.updateFullscreenButton()
+        Button.createButtonBase(parent_div_right, {
             text: "Pause",
             class_name: "release-only",
             id: "pause-btn",
@@ -865,4 +925,3 @@ export class Button{
 
 // Attach the Button class to the global window object
 (window as any).Button = Button;
-
