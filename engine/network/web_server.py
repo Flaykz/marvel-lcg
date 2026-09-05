@@ -46,11 +46,11 @@ class WebServer:
     #
     @final
     def LoadHtmlAuthenticate(self):
-        return self.ReadFile('./public/authenticate.html')
+        return self.ReadFile('./public/authenticate.html', cache=False)
 
     @final
     def LoadHtmlCleanCache(self):
-        return self.ReadFile('./public/clean_cache.html')
+        return self.ReadFile('./public/clean_cache.html', cache=False)
 
     ################################################################################
     #
@@ -104,7 +104,7 @@ class WebServer:
             elif not self.IsVersionMatch(request):
                 return self.LoadHtmlCleanCache()
             else:
-                return self.ReadFile(html)
+                return self.ReadFile(html, cache=False)
         self.web_app.router.add_get(path, handle)
 
     @final
@@ -135,7 +135,7 @@ class WebServer:
             return web.json_response({})
 
     @final
-    def ReadFile(self, file_path: str, find_paths: List[str]=[]) -> web.Response:
+    def ReadFile(self, file_path: str, find_paths: List[str]=[], *, cache: bool|None=None) -> web.Response:
         if file_path.startswith("/"):
             file_path = "." + file_path
 
@@ -161,10 +161,15 @@ class WebServer:
             found_path = find_path(file_path)
             data = read_file(found_path, True)
             mime_type = MimeType.GetMimeType(file_path)
-            if Build.release:
+            use_cache = Build.release if cache is None else cache
+            if use_cache:
                 header = self.HeaderCache
             else:
-                header = {}
+                # No validator (ETag/Last-Modified) is attached, so this forces
+                # a full refetch every time rather than a conditional one: used
+                # for app code (html/js/css), which changes on every release,
+                # as opposed to genuinely static assets (images, fonts, sounds).
+                header = {'Cache-Control': 'no-cache'}
             return web.Response(body=data, content_type=mime_type, headers=header)
         except Exception as exc:
             Log.Debug(CATEGORY_NAME, f"{file_path=}")
@@ -229,14 +234,19 @@ class WebServer:
             )
             return response
 
+        # html/css/js are the app's own code: they change on every release, so
+        # unlike images/fonts/sounds (still cached via HeaderCache) they must
+        # never be served with the long HeaderCache lifetime (see CACHE_MAX_AGE)
+        # or a player's browser could keep running a stale build for up to a
+        # year without ever asking the server again.
         async def handle_html(request: web.Request):
-            return self.ReadFile(request.path, ['./public/'])
+            return self.ReadFile(request.path, ['./public/'], cache=False)
 
         async def handle_css(request: web.Request):
-            return self.ReadFile(request.path, ['./public/css', './public/'])
+            return self.ReadFile(request.path, ['./public/css', './public/'], cache=False)
 
         async def handle_js(request: web.Request):
-            return self.ReadFile(request.path, ['./public/js', './public/'])
+            return self.ReadFile(request.path, ['./public/js', './public/'], cache=False)
 
         async def handle_ts(request: web.Request):
             if Build.release:

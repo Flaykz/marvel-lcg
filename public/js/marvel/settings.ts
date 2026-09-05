@@ -102,6 +102,7 @@ export class ButtonSetting {
     static always_show_minions_belong = 1
     static hide_no_action_cards = 1
     static players_pin = 1
+    static right_side_bar_pin = 0
 
     static show_auto_activate = 0
     static auto_activate = 1

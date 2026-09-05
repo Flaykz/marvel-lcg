@@ -786,6 +786,38 @@ export class Button{
 
         const parent_div_right = document.getElementById('right-side-bar') as HTMLElement
         Button.createButtonBase(parent_div_right, {
+            text: `<i class="fa fa-lock" aria-hidden="true"></i>`,
+            class_name: "lock",
+            id: "right-side-bar-pin",
+            property: 'right_side_bar_pin'
+        })
+
+        // Touch/mobile: :hover never fires, so the sidebar (and its lock button
+        // above) stays unreachable behind its 4px sliver. Show an always-visible
+        // floating button instead, bound to the same setting, that opens the
+        // sidebar on tap. CSS (side-bar.css) makes the two mutually exclusive
+        // via `@media (hover: none)`, and hides this button once open (it would
+        // otherwise sit on top of the sidebar's own bottom-most button).
+        Button.createButtonBase(document.body, {
+            text: `<i class="fa fa-bars" aria-hidden="true"></i>`,
+            class_name: "mobile-menu-toggle",
+            id: "mobile-menu-toggle",
+            property: 'right_side_bar_pin'
+        })
+
+        // Tapping outside the (now hidden) toggle button is the only way left
+        // to close the menu, so: tapping anywhere that isn't the sidebar itself
+        // closes it. Gated to touch (`hover: none`) so it never fights the
+        // desktop lock button, which is meant to stay pinned open regardless
+        // of where the mouse goes.
+        document.addEventListener('pointerdown', (e) => {
+            if( !window.matchMedia('(hover: none)').matches ) return
+            if( ButtonSetting.right_side_bar_pin == 0 ) return
+            if( parent_div_right.contains(e.target as Node) ) return
+            ButtonSetting.right_side_bar_pin = 0
+            document.getElementById('mobile-menu-toggle')?.classList.remove('clicked')
+        }, true)
+        Button.createButtonBase(parent_div_right, {
             text: "Log",
             onClick: () => {Button.doToggleHistory()}
         })
@@ -797,6 +829,7 @@ export class Button{
         document.addEventListener('fullscreenchange', Button.updateFullscreenButton)
         document.addEventListener('webkitfullscreenchange', Button.updateFullscreenButton)
         Button.updateFullscreenButton()
+
         Button.createButtonBase(parent_div_right, {
             text: "Pause",
             class_name: "release-only",

@@ -45,6 +45,60 @@
     right: 0;
 }
 
+/*
+ * Touch devices have no :hover, so #right-side-bar (and its in-panel lock
+ * button) stays hidden behind its 4px sliver until this floating button is
+ * tapped. On real hover-capable devices it's the other way around: the bar
+ * is one hover away, so the floating button just gets out of the way.
+ */
+#mobile-menu-toggle {
+    display: none;
+}
+
+body:has(#mobile-menu-toggle.clicked) #right-side-bar {
+    right: 0;
+    transition: none;
+}
+
+@media (hover: none) {
+    #right-side-bar-pin {
+        display: none;
+    }
+
+    /* No :hover means the 4px sliver can never be revealed by hovering it,
+       so it's just dead space poking into the screen — hide it completely,
+       the floating button is the only way in on touch. */
+    #right-side-bar {
+        right: calc(-1 * var(--width));
+    }
+
+    #mobile-menu-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        position: fixed;
+        right: calc(.75rem + env(safe-area-inset-right, 0px));
+        bottom: calc(.75rem + env(safe-area-inset-bottom, 0px));
+        z-index: var(--z-index-right-side-bar);
+
+        margin: 0;
+        padding: 0;
+        width: calc(2.5 * var(--font-size-out));
+        height: calc(2.5 * var(--font-size-out));
+        border-radius: 50%;
+        font-size: calc(1.3 * var(--font-size-out));
+    }
+
+    /* Once open, the toggle button sits right where the bottom-most sidebar
+       button is, blocking it. There's no need for it to double as a "close"
+       control anyway (tapping outside the menu closes it, see buttons.ts) —
+       so just get it out of the way while the menu is open. */
+    #mobile-menu-toggle.clicked {
+        display: none;
+    }
+}
+
 #left-side-bar:hover {
     left: 0;
     transition: none;

@@ -12,9 +12,9 @@ class GameServerFiles(GameServerBase):
 
     async def handle_marvel(self, request: web.Request) -> web.StreamResponse:
         if request.query_string == '':
-            return self.ReadFile('./public/main.html')
+            return self.ReadFile('./public/main.html', cache=False)
         else:
-            return self.ReadFile('./public/marvel.html')
+            return self.ReadFile('./public/marvel.html', cache=False)
 
     async def handle_players_404(self, request: web.Request) -> web.StreamResponse:
         player = request.match_info.get('player')
